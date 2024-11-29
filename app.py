@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import os
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -17,7 +17,7 @@ class_labels = ['Botol Kaca', 'Kaleng', 'Kardus', 'Kertas', 'Plastik' ]
 
 @app.route("/")
 def home():
-    return "Garbage Classification Model is Running!"
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
