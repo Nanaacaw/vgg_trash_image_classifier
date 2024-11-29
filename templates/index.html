@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garbage Classification</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f9;
+      }
+      h1 {
+        margin-bottom: 20px;
+      }
+      input[type="file"] {
+        margin-bottom: 20px;
+      }
+      #result {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Garbage Classification</h1>
+    <input type="file" id="image" accept="image/*" />
+    <button onclick="uploadImage()">Predict</button>
+
+    <div id="result">
+      <p id="predictedClass"></p>
+      <p id="confidence"></p>
+    </div>
+
+    <script>
+      function uploadImage() {
+        const fileInput = document.getElementById("image");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Please upload an image.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("http://127.0.0.1:5000/predict", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              document.getElementById("predictedClass").innerText =
+                "Error: " + data.error;
+              document.getElementById("confidence").innerText = "";
+            } else {
+              document.getElementById("predictedClass").innerText =
+                "Predicted Class: " + data.predicted_class;
+              document.getElementById("confidence").innerText =
+                "Confidence: " + data.confidence;
+            }
+          })
+          .catch((error) => {
+            document.getElementById("predictedClass").innerText =
+              "Error: " + error;
+            document.getElementById("confidence").innerText = "";
+          });
+      }
+    </script>
+  </body>
+</html>
