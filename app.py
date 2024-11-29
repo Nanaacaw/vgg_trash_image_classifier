@@ -4,10 +4,12 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from io import BytesIO
+from flask_cors import CORS
+
 
 # Inisialisasi Flask app
 app = Flask(__name__)
-
+CORS(app)
 # Load model
 model_path = "model/final_model_vgg.h5"
 model = load_model(model_path)
