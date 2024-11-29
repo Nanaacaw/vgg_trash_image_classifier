@@ -50,11 +50,19 @@
         const formData = new FormData();
         formData.append("file", file);
 
-        fetch("http://127.0.0.1:5000/predict", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
+        fetch(
+          "https://app-trash-image-classifier.1ouqaoi9nhir.us-south.codeengine.appdomain.cloud/predict",
+          {
+            method: "POST",
+            body: formData,
+          }
+        )
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
           .then((data) => {
             if (data.error) {
               document.getElementById("predictedClass").innerText =
@@ -69,7 +77,7 @@
           })
           .catch((error) => {
             document.getElementById("predictedClass").innerText =
-              "Error: " + error;
+              "Error: " + error.message;
             document.getElementById("confidence").innerText = "";
           });
       }
