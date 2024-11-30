@@ -3,84 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Garbage Classification</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background-color: #f4f4f9;
-      }
-      h1 {
-        margin-bottom: 20px;
-      }
-      input[type="file"] {
-        margin-bottom: 20px;
-      }
-      #result {
-        margin-top: 20px;
-      }
-    </style>
+    <title>Image Classifier</title>
   </head>
   <body>
-    <h1>Garbage Classification</h1>
-    <input type="file" id="image" accept="image/*" />
-    <button onclick="uploadImage()">Predict</button>
-
-    <div id="result">
-      <p id="predictedClass"></p>
-      <p id="confidence"></p>
-    </div>
+    <h1>Upload Gambar untuk Prediksi</h1>
+    <form id="uploadForm">
+      <input type="file" id="fileInput" name="file" accept="image/*" />
+      <button type="submit">Upload dan Prediksi</button>
+    </form>
+    <div id="result"></div>
 
     <script>
-      function uploadImage() {
-        const fileInput = document.getElementById("image");
-        const file = fileInput.files[0];
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
 
-        if (!file) {
-          alert("Please upload an image.");
-          return;
-        }
+          const formData = new FormData();
+          const fileInput = document.getElementById("fileInput").files[0];
+          formData.append("file", fileInput);
 
-        const formData = new FormData();
-        formData.append("file", file);
+          try {
+            const response = await fetch("http://127.0.0.1:5000/predict", {
+              method: "POST",
+              body: formData,
+            });
 
-        fetch(
-          "https://app-trash-image-classifier.1ouqaoi9nhir.us-south.codeengine.appdomain.cloud/predict",
-          {
-            method: "POST",
-            body: formData,
-          }
-        )
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            if (data.error) {
-              document.getElementById("predictedClass").innerText =
-                "Error: " + data.error;
-              document.getElementById("confidence").innerText = "";
+            const data = await response.json();
+            if (response.ok) {
+              document.getElementById(
+                "result"
+              ).innerText = `Class: ${data.predicted_class}, Confidence: ${data.confidence}`;
             } else {
-              document.getElementById("predictedClass").innerText =
-                "Predicted Class: " + data.predicted_class;
-              document.getElementById("confidence").innerText =
-                "Confidence: " + data.confidence;
+              document.getElementById(
+                "result"
+              ).innerText = `Error: ${data.error}`;
             }
-          })
-          .catch((error) => {
-            document.getElementById("predictedClass").innerText =
-              "Error: " + error.message;
-            document.getElementById("confidence").innerText = "";
-          });
-      }
+          } catch (error) {
+            document.getElementById(
+              "result"
+            ).innerText = `Request failed: ${error.message}`;
+          }
+        });
     </script>
   </body>
 </html>
