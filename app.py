@@ -12,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 # API key yang valid
-VALID_API_KEY = "499c18c6-9f57-45f8-b6eb-ba2c8275e274"
+hardcode_api_key = "499c18c6-9f57-45f8-b6eb-ba2c8275e274"
 
 # Load model
 model_path = "model/final_model_vgg.h5"
@@ -28,9 +28,9 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     # Verifikasi API key
-    api_key = request.headers.get("Authorization")
-    if api_key != f"Bearer {VALID_API_KEY}":
-        return jsonify({"error": "Unauthorized, invalid API key"}), 401
+    api_key = request.headers.get('API-Key')
+    if api_key != hardcode_api_key:
+        return jsonify({'error': 'Invalid API key. Please check your API key and try again.'})
     
     if "file" not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
