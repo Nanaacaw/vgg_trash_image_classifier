@@ -108,7 +108,8 @@
 
           try {
             const response = await fetch(
-              "https://app-trash-image-classify.1ow35h81b0qb.us-south.codeengine.appdomain.cloud/predict",
+              // "https://app-trash-image-classify.1ow35h81b0qb.us-south.codeengine.appdomain.cloud/predict",
+              "http://127.0.0.1:5000/predict",
               {
                 method: "POST",
                 body: formData,
